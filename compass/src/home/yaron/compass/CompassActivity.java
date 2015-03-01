@@ -1,0 +1,83 @@
+package home.yaron.compass;
+
+import home.yaron.volleyhttp.VolleySingleton;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import android.app.Activity;
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
+/** 
+ * 
+ */
+public class CompassActivity extends Activity implements OnClickListener
+{
+	final static String TAG = CompassActivity.class.getSimpleName();
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_compass);	
+	}	
+
+	@Override
+	public void onClick(View v)
+	{
+		switch (v.getId()) {
+		case R.id.dummy_button:
+			registerDeviceOnServer();
+			break;
+		default:
+			break;
+		}		
+	}
+
+	private void registerDeviceOnServer()
+	{
+		final String URL = "http://192.168.0.107:8089/api/scores/register";
+		//final String URL = "http://10.0.2.2:8089/api/scores/test";
+
+		// Formulate the request and handle the response.
+		StringRequest stringRequest = new StringRequest(Request.Method.POST, URL,
+				new Response.Listener<String>() {
+			@Override
+			public void onResponse(String response) {
+				Log.d(TAG,"onResponse:\n"+response.toString());
+			}
+		},
+		new Response.ErrorListener() {
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				// Handle error
+				Log.d(TAG,"onErrorResponse:\n"+error.getMessage());
+			}
+		})
+		{
+			@Override
+			protected Map<String,String> getParams() {
+				Map<String,String> params = new HashMap<String, String>();
+				params.put("user","userX"+System.getProperty("line.separator"));
+				params.put("pass","passX"+System.getProperty("line.separator"));
+				params.put("comment", Uri.encode("commentX")+System.getProperty("line.separator"));
+				params.put("comment_post_ID",String.valueOf(55)+System.getProperty("line.separator"));
+				params.put("blogId",String.valueOf(43)+System.getProperty("line.separator"));
+
+				return params;
+			}
+		};
+
+		// Add the request to the RequestQueue.
+		VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
+	}
+}
