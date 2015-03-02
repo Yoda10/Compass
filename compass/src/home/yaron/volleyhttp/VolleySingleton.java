@@ -1,6 +1,7 @@
 package home.yaron.volleyhttp;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -8,6 +9,7 @@ import com.android.volley.toolbox.Volley;
 
 public class VolleySingleton
 {
+	final static String TAG = VolleySingleton.class.getSimpleName();
 	private static VolleySingleton instance; // Singleton
 
 	private RequestQueue requestQueue;	
@@ -38,6 +40,14 @@ public class VolleySingleton
 
 	public <T> void addToRequestQueue(Request<T> request)
 	{
+		Log.d(TAG,"addToRequestQueue(..)");
 		getRequestQueue().add(request);
-	}	
+	}
+	
+	public void dispose()
+	{
+		Log.d(TAG,"dispose(..)");
+		getRequestQueue().stop();
+		instance = null;
+	}
 }

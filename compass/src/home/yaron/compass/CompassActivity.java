@@ -20,7 +20,7 @@ import com.android.volley.toolbox.StringRequest;
  * 
  */
 public class CompassActivity extends Activity implements OnClickListener
-{
+{	
 	final static String TAG = CompassActivity.class.getSimpleName();
 	
 	@Override
@@ -33,6 +33,8 @@ public class CompassActivity extends Activity implements OnClickListener
 	@Override
 	public void onClick(View v)
 	{
+		Log.d(TAG,"onClick(..)");
+		
 		switch (v.getId()) {
 		case R.id.dummy_button:
 			registerDeviceOnServer();
@@ -44,8 +46,9 @@ public class CompassActivity extends Activity implements OnClickListener
 
 	private void registerDeviceOnServer()
 	{
-		final String URL = "http://192.168.0.110:8089/api/scores/register";
-		//final String URL = "http://10.0.2.2:8089/api/scores/test";
+		final String URL = "http://192.168.0.105:8089/api/scores/register";
+		//final String URL = "http://192.168.0.105:8089/api/scores/sendMessage";
+		//final String URL = "http://192.168.0.105:8089/api/scores/test";
 
 		// Formulate the request and handle the response.
 		StringRequest stringRequest = new StringRequest(Request.Method.POST, URL,
@@ -68,6 +71,7 @@ public class CompassActivity extends Activity implements OnClickListener
 				Map<String,String> params = new HashMap<String, String>();
 				params.put("RegistrationId","RegistrationId_55");
 				params.put("DeviceName","DeviceName_55");
+				params.put("Message","This is my Message.");
 
 				return params;
 			}
@@ -75,5 +79,14 @@ public class CompassActivity extends Activity implements OnClickListener
 
 		// Add the request to the RequestQueue.
 		VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
+	}
+	
+	@Override
+	public void finish()
+	{
+		Log.d(TAG,"finish(..)");		
+		super.finish();
+		
+		VolleySingleton.getInstance(this).dispose();
 	}
 }
