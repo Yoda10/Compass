@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -45,7 +44,7 @@ public class CompassActivity extends Activity implements OnClickListener
 
 	private void registerDeviceOnServer()
 	{
-		final String URL = "http://192.168.0.107:8089/api/scores/register";
+		final String URL = "http://192.168.0.110:8089/api/scores/register";
 		//final String URL = "http://10.0.2.2:8089/api/scores/test";
 
 		// Formulate the request and handle the response.
@@ -67,11 +66,8 @@ public class CompassActivity extends Activity implements OnClickListener
 			@Override
 			protected Map<String,String> getParams() {
 				Map<String,String> params = new HashMap<String, String>();
-				params.put("user","userX"+System.getProperty("line.separator"));
-				params.put("pass","passX"+System.getProperty("line.separator"));
-				params.put("comment", Uri.encode("commentX")+System.getProperty("line.separator"));
-				params.put("comment_post_ID",String.valueOf(55)+System.getProperty("line.separator"));
-				params.put("blogId",String.valueOf(43)+System.getProperty("line.separator"));
+				params.put("RegistrationId","RegistrationId_55");
+				params.put("DeviceName","DeviceName_55");
 
 				return params;
 			}
