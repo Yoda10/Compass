@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 /** 
  * 
@@ -22,7 +24,7 @@ import com.android.volley.toolbox.StringRequest;
 public class CompassActivity extends Activity implements OnClickListener
 {	
 	final static String TAG = CompassActivity.class.getSimpleName();
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -34,7 +36,7 @@ public class CompassActivity extends Activity implements OnClickListener
 	public void onClick(View v)
 	{
 		Log.d(TAG,"onClick(..)");
-		
+
 		switch (v.getId()) {
 		case R.id.dummy_button:
 			registerDeviceOnServer();
@@ -80,13 +82,48 @@ public class CompassActivity extends Activity implements OnClickListener
 		// Add the request to the RequestQueue.
 		VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
 	}
-	
+
 	@Override
 	public void finish()
 	{
 		Log.d(TAG,"finish(..)");		
 		super.finish();
-		
+
 		VolleySingleton.getInstance(this).dispose();
+	}	
+
+	public void gcmRegistration()
+	{
+		new AsyncTask<Void, Void, String>() {
+			@Override
+			protected String doInBackground(Void... params) {
+				String regId = null;
+				try
+				{
+					final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
+					regId = gcm.register("PROJECT_NUMBER");					
+					Log.d(TAG,"Device successfully registered to GCM service regId:"+regId);
+					sendRegistrationIdToBackend(regId);
+				}
+				catch(Exception ex) {
+					Log.e(TAG, "Problem registering to GCM service.", ex);
+				}
+				return regId;
+			}
+
+			@Override
+			protected void onPostExecute(String regId) {
+
+			}
+		}.execute(null, null, null);
+	}
+
+	/**
+	 * Sends the registration ID to your server over HTTP, so it can use GCM/HTTP
+	 * or CCS to send messages to your app.
+	 */
+	private void sendRegistrationIdToBackend(String regId)
+	{
+		// Your implementation here.
 	}
 }
