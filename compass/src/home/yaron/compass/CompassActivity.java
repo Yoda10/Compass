@@ -46,8 +46,8 @@ public class CompassActivity extends Activity implements OnClickListener
 
 	private void registerDeviceOnServer()
 	{
-		final String URL = "http://192.168.0.105:8089/api/scores/register";
-		//final String URL = "http://192.168.0.105:8089/api/scores/sendMessage";
+		//final String URL = "http://192.168.0.105:8089/api/scores/register";
+		final String URL = "http://192.168.0.105:8089/api/scores/sendMessage";
 		//final String URL = "http://192.168.0.105:8089/api/scores/test";
 
 		// Formulate the request and handle the response.
