@@ -2,7 +2,8 @@
 <resources>
 
     <string name="app_name">compass</string>
-    <string name="dummy_button">GCM Registration</string>
+    <string name="button_register">GCM Registration</string>
+    <string name="button_send">Send message</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

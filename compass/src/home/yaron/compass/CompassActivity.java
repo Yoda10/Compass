@@ -28,7 +28,8 @@ public class CompassActivity extends Activity implements OnClickListener
 	final static String TAG = CompassActivity.class.getSimpleName();
 	final static String API_PROJECT_NUMBER = "231729049897";
 	final static String API_SERVER_KEY = "AIzaSyAd7A0j7NOqoAyQRu3R-xBaVIDODoe-_aM";
-	
+	final static String DEVICE_NAME = "Sony_tablet";
+
 	// Members
 	private TextView mainText = null;	
 
@@ -37,7 +38,7 @@ public class CompassActivity extends Activity implements OnClickListener
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_compass);
-		
+
 		mainText = (TextView)findViewById(R.id.main_text);
 	}	
 
@@ -47,9 +48,11 @@ public class CompassActivity extends Activity implements OnClickListener
 		Log.d(TAG,"onClick(..)");
 
 		switch (v.getId()) {
-		case R.id.dummy_button:
-			//registerDeviceOnServer();
+		case R.id.button_register:			
 			gcmRegistration();
+			break;
+		case R.id.button_send:			
+			sendMessage(DEVICE_NAME,"My Android message.");
 			break;
 		default:
 			break;
@@ -108,7 +111,10 @@ public class CompassActivity extends Activity implements OnClickListener
 		VolleySingleton.getInstance(this).dispose();
 	}	
 
-	public void gcmRegistration()
+	/***
+	 * Register this mobile device on the GCM service.
+	 */
+	private void gcmRegistration()
 	{
 		new AsyncTask<Void, Void, String>() {
 			String message = "empty";
@@ -121,7 +127,7 @@ public class CompassActivity extends Activity implements OnClickListener
 					regId = gcm.register(API_PROJECT_NUMBER);
 					message = "Device successfully registered to GCM service."+"\nregId:"+regId;
 					Log.d(TAG,message);
-					registerDeviceOnServer("Sony_tablet",regId);
+					registerDeviceOnServer(DEVICE_NAME,regId);
 				}
 				catch(Exception ex) {
 					message = "Problem registering to GCM service.";
@@ -136,5 +142,40 @@ public class CompassActivity extends Activity implements OnClickListener
 					mainText.setText(message);
 			}
 		}.execute(null, null, null);
-	}	
+	}
+
+	private void sendMessage(final String deviceName, final String message)
+	{
+		final String URL = "http://192.168.0.104:8089/api/scores/sendMessage";	
+
+		// Formulate the request and handle the response.
+		StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
+			@Override
+			public void onResponse(String response) {				
+				Log.d(TAG,"onResponse:\n"+response.toString());
+				mainText.setText("\nServer response:"+response.toString());
+			}
+		},
+		new Response.ErrorListener() {
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				// Handle error
+				Log.d(TAG,"onErrorResponse:\n"+error.getMessage());
+				mainText.setText("\nServer error response:"+error.getMessage());
+			}
+		})
+		{
+			@Override
+			protected Map<String,String> getParams() {
+				Map<String,String> params = new HashMap<String, String>();			
+				params.put("DeviceName",deviceName);
+				params.put("Message",message);				
+
+				return params;
+			}
+		};
+
+		// Add the request to the RequestQueue.
+		VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
+	}
 }
