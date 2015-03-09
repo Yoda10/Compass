@@ -43,8 +43,8 @@ public class GcmIntentService extends IntentService
 				Log.d(TAG,"GCM error message type:"+messageType);				
 			}			 
 			else 
-			{
-				Log.d(TAG, "GCM push message received.\nextras:" + extras.toString());
+			{				
+				Log.d(TAG, "GCM push message received.\nextras:" + extras.toString());							
 				
 				// Do some work.
 				final Chaim chaim = new Chaim();
