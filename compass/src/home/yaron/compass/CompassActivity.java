@@ -1,5 +1,6 @@
 package home.yaron.compass;
 
+import home.yaron.config.Config;
 import home.yaron.volleyhttp.VolleySingleton;
 
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -26,9 +28,9 @@ public class CompassActivity extends Activity implements OnClickListener
 {	
 	// Constants
 	final static String TAG = CompassActivity.class.getSimpleName();
-	final static String API_PROJECT_NUMBER = "231729049897";
-	final static String API_SERVER_KEY = "AIzaSyAd7A0j7NOqoAyQRu3R-xBaVIDODoe-_aM";
+	final static String API_PROJECT_NUMBER = "231729049897";	
 	final static String DEVICE_NAME = "Sony_tablet";
+	final String Server_URL = "http://192.168.0.104:8089/api/scores/";
 
 	// Members
 	private TextView mainText = null;	
@@ -61,16 +63,23 @@ public class CompassActivity extends Activity implements OnClickListener
 
 	/**
 	 * Sends the registration ID to your server over HTTP, so it can use GCM/HTTP
-	 * or CCS to send messages to your app.
+	 * or CCS to send messages to your application.
 	 */
-	private void registerDeviceOnServer(final String deviceName, final String regId)
+	private void registerDeviceOnServer(final String deviceName, final String registrationId)
 	{
-		final String URL = "http://192.168.0.104:8089/api/scores/register";
+		final String URLx = "http://192.168.0.104:8089/api/scores/register";
 		//final String URL = "http://192.168.0.104:8089/api/scores/sendMessage";
 		//final String URL = "http://192.168.0.105:8089/api/scores/test";
+		
+		final String serverUrl = Config.getInstance(this).getProperty("ServerUrl");
+		if( serverUrl == null )
+		{
+			Toast.makeText(this, "Server URL not found on config file.", Toast.LENGTH_LONG).show();
+			return;
+		}
 
 		// Formulate the request and handle the response.
-		StringRequest stringRequest = new StringRequest(Request.Method.POST, URL,
+		StringRequest stringRequest = new StringRequest(Request.Method.POST, serverUrl+"register",
 				new Response.Listener<String>() {
 			@Override
 			public void onResponse(String response) {				
@@ -91,7 +100,7 @@ public class CompassActivity extends Activity implements OnClickListener
 			protected Map<String,String> getParams() {
 				Map<String,String> params = new HashMap<String, String>();				
 				params.put("DeviceName",deviceName);
-				params.put("RegistrationId",regId);
+				params.put("RegistrationId",registrationId);
 				//params.put("Message","This is my Message.");
 
 				return params;
@@ -109,6 +118,7 @@ public class CompassActivity extends Activity implements OnClickListener
 		super.finish();
 
 		VolleySingleton.getInstance(this).dispose();
+		Config.getInstance(this).dispose();
 	}	
 
 	/***
@@ -120,20 +130,20 @@ public class CompassActivity extends Activity implements OnClickListener
 			String message = "empty";
 			@Override
 			protected String doInBackground(Void... params) {
-				String regId = null;				 
+				String registrationId = null;				 
 				try
 				{
 					final GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
-					regId = gcm.register(API_PROJECT_NUMBER);
-					message = "Device successfully registered to GCM service."+"\nregId:"+regId;
+					registrationId = gcm.register(API_PROJECT_NUMBER);
+					message = "Device successfully registered to GCM service."+"\nregId:"+registrationId;
 					Log.d(TAG,message);
-					registerDeviceOnServer(DEVICE_NAME,regId);
+					registerDeviceOnServer(DEVICE_NAME,registrationId);
 				}
 				catch(Exception ex) {
 					message = "Problem registering to GCM service.";
 					Log.e(TAG, message, ex);					
 				}
-				return regId;
+				return registrationId;
 			}
 
 			@Override
@@ -146,10 +156,19 @@ public class CompassActivity extends Activity implements OnClickListener
 
 	private void sendMessage(final String deviceName, final String message)
 	{
-		final String URL = "http://192.168.0.104:8089/api/scores/sendMessage";	
+		final String URLx = "http://192.168.0.104:8089/api/scores/sendMessage";
+		//Config.getInstance(this).setProperty("URL", "http://192.168.0.104:8089/api/scores/sendMessage");
+		//String x = Config.getProperty(this, "URL");
+		
+		final String serverUrl = Config.getInstance(this).getProperty("ServerUrl");
+		if( serverUrl == null )
+		{
+			Toast.makeText(this, "Server URL not found on config file.", Toast.LENGTH_LONG).show();
+			return;
+		}
 
 		// Formulate the request and handle the response.
-		StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
+		StringRequest stringRequest = new StringRequest(Request.Method.POST, serverUrl+"sendMessage", new Response.Listener<String>() {
 			@Override
 			public void onResponse(String response) {				
 				Log.d(TAG,"onResponse:\n"+response.toString());
@@ -177,5 +196,5 @@ public class CompassActivity extends Activity implements OnClickListener
 
 		// Add the request to the RequestQueue.
 		VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
-	}
+	}	
 }
