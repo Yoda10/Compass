@@ -29,8 +29,7 @@ public class CompassActivity extends Activity implements OnClickListener
 	// Constants
 	final static String TAG = CompassActivity.class.getSimpleName();
 	final static String API_PROJECT_NUMBER = "231729049897";	
-	final static String DEVICE_NAME = "Sony_tablet";
-	final String Server_URL = "http://192.168.0.104:8089/api/scores/";
+	final static String DEVICE_NAME = "Sony_tablet";	
 
 	// Members
 	private TextView mainText = null;	
@@ -66,11 +65,7 @@ public class CompassActivity extends Activity implements OnClickListener
 	 * or CCS to send messages to your application.
 	 */
 	private void registerDeviceOnServer(final String deviceName, final String registrationId)
-	{
-		final String URLx = "http://192.168.0.104:8089/api/scores/register";
-		//final String URL = "http://192.168.0.104:8089/api/scores/sendMessage";
-		//final String URL = "http://192.168.0.105:8089/api/scores/test";
-		
+	{		
 		final String serverUrl = Config.getInstance(this).getProperty("ServerUrl");
 		if( serverUrl == null )
 		{
@@ -100,8 +95,7 @@ public class CompassActivity extends Activity implements OnClickListener
 			protected Map<String,String> getParams() {
 				Map<String,String> params = new HashMap<String, String>();				
 				params.put("DeviceName",deviceName);
-				params.put("RegistrationId",registrationId);
-				//params.put("Message","This is my Message.");
+				params.put("RegistrationId",registrationId);				
 
 				return params;
 			}
@@ -155,11 +149,7 @@ public class CompassActivity extends Activity implements OnClickListener
 	}
 
 	private void sendMessage(final String deviceName, final String message)
-	{
-		final String URLx = "http://192.168.0.104:8089/api/scores/sendMessage";
-		//Config.getInstance(this).setProperty("URL", "http://192.168.0.104:8089/api/scores/sendMessage");
-		//String x = Config.getProperty(this, "URL");
-		
+	{		
 		final String serverUrl = Config.getInstance(this).getProperty("ServerUrl");
 		if( serverUrl == null )
 		{

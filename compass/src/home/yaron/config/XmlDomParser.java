@@ -19,7 +19,7 @@ public class XmlDomParser
 {
 	final static String TAG = XmlDomParser.class.getSimpleName();
 
-	public static Map readXmlConfigFile()
+	public static Map<String,String> readXmlConfigFile()
 	{
 		final Hashtable<String, String> map = new Hashtable<String, String>();
 
